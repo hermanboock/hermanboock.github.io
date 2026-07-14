@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Herman John Boock — Product Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --board: #FAFAF8;
+    --ink: #201D18;
+    --ink-soft: #55503F;
+    --ink-faint: #8B8474;
+    --accent: #2F4A3C;
+    --marker-amber: #D9C09A;
+    --marker-blue: #AFC4DC;
+    --marker-coral: #DDB3A8;
+    --marker-green: #A8CDB4;
+    --font-body: 'Roboto', sans-serif;
+    --font-marker: 'Permanent Marker', cursive;
+    --gutter: clamp(24px, 6vw, 64px);
+    --frame-w: 16px;
+
+    /* serious mode tokens */
+    --serious-bg: #14161A;
+    --serious-bg-raised: #1D2026;
+    --serious-text: #F2F1ED;
+    --serious-text-soft: #A6A9B0;
+    --serious-accent: #7FBF9E;
+    --serious-border: rgba(255,255,255,0.08);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{ height: 100%; overflow: hidden; }
+
+  body{
+    margin:0;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    background: var(--board);
+    background-image:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.9), transparent 45%),
+      linear-gradient(135deg, rgba(255,255,255,0.5), transparent 60%);
+    border: var(--frame-w) solid;
+    border-image: linear-gradient(135deg, #dfe1e4 0%, #aaadb2 18%, #f1f2f4 32%, #9a9ea3 55%, #eef0f2 75%, #c3c6ca 100%) 1;
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+  }
+
+  body::before{
+    content:"";
+    position: fixed;
+    top: var(--frame-w); right: var(--frame-w);
+    bottom: var(--frame-w); left: var(--frame-w);
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.10);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after{
+    content:"";
+    position: fixed;
+    left: var(--frame-w); right: var(--frame-w);
+    bottom: var(--frame-w);
+    height: 12px;
+    background: linear-gradient(to bottom, #eef0f2, #b9bcc1);
+    box-shadow: 0 -1px 3px rgba(0,0,0,0.18) inset, 0 1px 2px rgba(0,0,0,0.15);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  a{ color: inherit; text-decoration: none; }
+
+  .wrap{
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+
+  .hero{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .hero .wrap{
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+
+  .hero-eyebrow{
+    display: block;
+    margin: 0 0 6px;
+  }
+  .hero-eyebrow span{
+    font-family: var(--font-marker);
+    font-weight: 400;
+    font-size: clamp(16px, 2.2vw, 20px);
+    color: #000;
+    letter-spacing: 0.06em;
+    display: inline-block;
+    clip-path: inset(0 100% 0 0);
+    animation: write-on 0.7s steps(9) forwards;
+  }
+
+  .hero h1{
+    font-family: var(--font-marker);
+    font-weight: 400;
+    font-size: clamp(42px, 8vw, 76px);
+    line-height: 1.15;
+    margin: 0 0 28px;
+    letter-spacing: 0.01em;
+    color: #000;
+    display: inline-block;
+    clip-path: inset(0 100% 0 0);
+    animation: write-on 2.3s steps(34) forwards;
+    animation-delay: 0.9s;
+  }
+
+  .hero-role{
+    font-family: var(--font-marker);
+    font-weight: 400;
+    font-size: clamp(24px, 4vw, 34px);
+    color: #000;
+    margin: 0;
+    display: inline-block;
+    clip-path: inset(0 100% 0 0);
+    animation: write-on 1.5s steps(20) forwards;
+    animation-delay: 3.5s;
+  }
+
+  @keyframes write-on{
+    from{ clip-path: inset(0 100% 0 0); }
+    to{ clip-path: inset(0 0% 0 0); }
+  }
+
+  .hero-squares{
+    position: relative;
+    height: 220px;
+    width: 520px;
+    max-width: 100%;
+    margin: 0 auto 32px;
+  }
+  .sq{
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 4px;
+    opacity: 0;
+    transform-origin: 50% 50%;
+    animation-timing-function: cubic-bezier(0.3, 0, 0.4, 1);
+    animation-duration: var(--sq-duration, 1.2s);
+    animation-fill-mode: forwards;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+    font-family: var(--font-body);
+    box-shadow:
+      0 3px 6px rgba(32,29,24,0.18),
+      0 1px 2px rgba(32,29,24,0.10);
+  }
+  .sq.clickable{ cursor: pointer; }
+  .sq::after{
+    content:"";
+    position:absolute;
+    top:0; right:0;
+    width:0; height:0;
+    border-style:solid;
+    border-width: 0 20px 20px 0;
+    border-color: transparent rgba(255,255,255,0.35) transparent transparent;
+  }
+  .sq .label{
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    text-align: center;
+    padding: 0 16px;
+    pointer-events: none;
+  }
+  .sq.play{ animation-name: stick-on; }
+  .sq:not(.play){ transform: rotate(var(--end-rot)); }
+
+  @keyframes stick-on{
+    0%{
+      opacity:0;
+      transform: scale(2.6) rotate(var(--start-rot));
+      box-shadow:
+        0 54px 60px rgba(32,29,24,0.26),
+        0 20px 26px rgba(32,29,24,0.15);
+    }
+    10%{ opacity:1; }
+    50%{
+      transform: scale(1.35) rotate(calc(var(--start-rot) * 0.3));
+      box-shadow:
+        0 28px 32px rgba(32,29,24,0.22),
+        0 9px 13px rgba(32,29,24,0.12);
+    }
+    72%{
+      transform: scale(0.9) rotate(var(--end-rot));
+      box-shadow:
+        0 4px 8px rgba(32,29,24,0.16),
+        0 1px 3px rgba(32,29,24,0.10);
+    }
+    84%{
+      transform: scale(1.04) rotate(calc(var(--end-rot) + var(--wobble)));
+    }
+    93%{
+      transform: scale(0.995) rotate(calc(var(--end-rot) - (var(--wobble) * 0.5)));
+    }
+    100%{
+      opacity:1;
+      transform: scale(1) rotate(var(--end-rot));
+      box-shadow:
+        0 3px 6px rgba(32,29,24,0.18),
+        0 1px 2px rgba(32,29,24,0.10);
+    }
+  }
+
+  .sq:hover{
+    transform: rotate(var(--end-rot)) scale(1.06) translateY(-4px) !important;
+    box-shadow: 0 10px 24px rgba(32,29,24,0.16);
+    z-index: 10 !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .sq-1{ background:#C9B8D1; top:50px;  left:0px;   z-index:1; --start-rot:-16deg; --end-rot:-5deg; --wobble:2deg;   animation-delay: calc((var(--sq-duration, 1.2s) + 0.3s) * 0); }
+  .sq-2{ background:#B8CDB0; top:10px;  left:110px; z-index:2; --start-rot:12deg;  --end-rot:3deg;  --wobble:-2deg;  animation-delay: calc((var(--sq-duration, 1.2s) + 0.3s) * 1); }
+  .sq-3{ background:#A9C4D1; top:60px;  left:220px; z-index:3; --start-rot:-10deg; --end-rot:-2deg; --wobble:2.5deg; animation-delay: calc((var(--sq-duration, 1.2s) + 0.3s) * 3); }
+  .sq-4{ background:#D9C79A; top:0px;   left:330px; z-index:2; --start-rot:14deg;  --end-rot:6deg;  --wobble:-2deg;  animation-delay: calc((var(--sq-duration, 1.2s) + 0.3s) * 2); }
+  .sq-5{ background:#D9B8AE; top:55px;  left:410px; z-index:4; --start-rot:-13deg; --end-rot:-4deg; --wobble:2deg;   animation-delay: calc((var(--sq-duration, 1.2s) + 0.3s) * 4); }
+
+  @media (max-width: 780px){
+    .hero-squares{ transform: scale(0.6); margin-bottom: 0; }
+  }
+
+  /* ============ MARGIN DOODLES ============ */
+  .doodle{
+    position: absolute;
+    font-family: var(--font-marker);
+    font-size: 15px;
+    line-height: 1.7;
+    text-align: left;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  .doodle-stack{
+    top: 11.07%;
+    left: 2.78%;
+    color: var(--marker-amber);
+    transform: rotate(-2deg);
+  }
+  .doodle-notes{
+    top: 66.25%;
+    left: 8.56%;
+    color: var(--marker-coral);
+    transform: rotate(-8deg);
+  }
+  .doodle-weekend{
+    top: 75.36%;
+    left: 76.89%;
+    color: var(--marker-blue);
+    text-align: left;
+    transform: rotate(18deg);
+  }
+  .doodle-linkedin{
+    top: 3.57%;
+    left: 88.89%;
+    font-size: 16px;
+    color: var(--marker-blue);
+    pointer-events: auto;
+    text-decoration: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: var(--marker-blue);
+    transform: rotate(-2deg);
+  }
+  .doodle-linkedin:hover{ color: var(--accent); }
+  .doodle-car{
+    top: 78.75%;
+    left: 55.56%;
+  }
+  .doodle-car svg{ width: 190px; height: 80px; }
+
+  /* ============ MAGNETIC PEN ============ */
+  #drawCanvas{
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 6;
+    pointer-events: none;
+  }
+
+  #pen{
+    position: fixed;
+    width: 30px;
+    height: 150px;
+    left: calc(var(--frame-w) + 6px);
+    top: 45%;
+    cursor: grab;
+    z-index: 20;
+    transform-origin: 50% 100%;
+    transform: rotate(4deg);
+    filter: drop-shadow(2px 3px 3px rgba(0,0,0,0.25));
+  }
+  #pen.held{ cursor: grabbing; }
+  #pen svg{ display: block; width: 100%; height: 100%; }
+
+  @media (max-width: 900px){
+    #pen{ display: none; }
+  }
+
+  @media (max-width: 900px){
+    .doodle{ display: none; }
+  }
+
+  a:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hero-eyebrow span, .hero h1, .hero-role{
+      animation: none !important;
+      clip-path: inset(0 0% 0 0) !important;
+    }
+    .sq{
+      animation: none !important;
+      opacity: 1;
+      transform: rotate(var(--end-rot));
+    }
+  }
+
+  /* ============ MODE TOGGLE ============ */
+  #modeToggle{
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    z-index: 30;
+    font-family: var(--font-marker);
+    font-size: 16px;
+    color: var(--marker-blue);
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: var(--marker-blue);
+    transform: rotate(-2deg);
+    transition: color 0.3s ease;
+  }
+  #modeToggle:hover{ color: var(--accent); }
+
+  @media (max-width: 900px){
+    #modeToggle{ display: none; }
+  }
+
+  /* ============ SERIOUS MODE ============ */
+  body.serious{
+    background: var(--serious-bg);
+    background-image: none;
+    border: none;
+    color: var(--serious-text);
+  }
+  body.serious::before, body.serious::after{ display: none; }
+
+  body.serious #modeToggle{
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--serious-text-soft);
+    border: 1px solid var(--serious-border);
+    border-radius: 20px;
+    padding: 8px 16px;
+    text-decoration: none;
+    transform: none;
+  }
+  body.serious #modeToggle:hover{
+    color: var(--serious-text);
+    border-color: var(--serious-accent);
+  }
+
+  /* ============ SERIOUS-MODE LINKEDIN ICON ============ */
+  #linkedinSerious{
+    display: none;
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 30;
+    color: var(--serious-text-soft);
+    transition: color 0.2s ease;
+  }
+  #linkedinSerious svg{ width: 22px; height: 22px; display: block; }
+  body.serious #linkedinSerious{ display: block; }
+  body.serious #linkedinSerious:hover{ color: var(--serious-accent); }
+
+  @media (max-width: 900px){
+    #linkedinSerious{ display: none !important; }
+  }
+
+  body.serious .doodle,
+  body.serious #pen,
+  body.serious #drawCanvas{
+    display: none !important;
+  }
+
+  body.serious .hero-eyebrow{
+    display: none;
+  }
+  body.serious .hero h1{
+    font-family: var(--font-body);
+    font-weight: 700;
+    color: var(--serious-text);
+    animation: none !important;
+    clip-path: inset(0 0% 0 0) !important;
+    letter-spacing: -0.01em;
+  }
+  body.serious .hero-role{
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-style: normal;
+    color: var(--serious-accent);
+    animation: none !important;
+    clip-path: inset(0 0% 0 0) !important;
+  }
+
+  body.serious .hero-squares{
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    width: auto;
+    height: auto;
+    margin: 0 auto 32px;
+  }
+  body.serious .sq{
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: auto;
+    height: auto;
+    min-width: 120px;
+    padding: 14px 22px;
+    border-radius: 8px;
+    background: var(--serious-bg-raised);
+    border: 1px solid var(--serious-border);
+    box-shadow: none;
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  body.serious .sq::after{ display: none; }
+  body.serious .sq .label{
+    color: var(--serious-text);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 14px;
+  }
+  body.serious .sq:hover{
+    transform: translateY(-3px) !important;
+    border-color: var(--serious-accent);
+  }
+
+  @media (max-width: 900px){
+    body.serious .hero-squares{ transform: none; }
+  }
+
+</style>
+</head>
+<body>
+
+  <script>
+    (function(){
+      var stored = localStorage.getItem('hjb-serious-mode');
+      var isSerious = stored === null ? true : stored === 'true';
+      if (isSerious) document.body.classList.add('serious');
+    })();
+  </script>
+
+  <button id="modeToggle" aria-label="Toggle serious mode">Serious mode</button>
+
+  <a id="linkedinSerious" href="https://www.linkedin.com/in/hermanboock/" target="_blank" rel="noopener" aria-label="LinkedIn">
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/>
+    </svg>
+  </a>
+
+  <canvas id="drawCanvas"></canvas>
+
+  <div id="pen">
+    <svg viewBox="0 0 30 150" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="0" width="26" height="26" rx="11" fill="#232323"></rect>
+      <rect x="2" y="14" width="26" height="14" fill="#232323"></rect>
+      <rect x="4" y="22" width="22" height="80" rx="6" fill="#F6F5F1" stroke="#D8D5CC" stroke-width="1"></rect>
+      <rect x="4" y="48" width="22" height="16" fill="var(--accent)"></rect>
+      <rect x="4" y="48" width="22" height="3" fill="rgba(0,0,0,0.15)"></rect>
+      <rect x="4" y="61" width="22" height="3" fill="rgba(0,0,0,0.15)"></rect>
+      <rect x="7" y="26" width="4" height="72" rx="2" fill="rgba(255,255,255,0.55)"></rect>
+      <path d="M4,102 L26,102 L20,124 L10,124 Z" fill="#2B2B2B"></path>
+      <path d="M10,124 L20,124 L18,142 Q15,150 12,142 Z" fill="#151515"></path>
+      <path d="M13,124 L17,124 L16,137 Q15,142 14,137 Z" fill="#3a3a3a"></path>
+    </svg>
+  </div>
+
+  <header class="hero">
+
+    <div class="doodle doodle-stack">
+      stack<br>
+      --&gt; Claude Code<br>
+      --&gt; SQL<br>
+      --&gt; JIRA<br>
+      --&gt; Lovable<br>
+      --&gt; Figma<br>
+      --&gt; More --&gt; ..
+    </div>
+
+    <a href="https://www.linkedin.com/in/hermanboock/" target="_blank" rel="noopener" class="doodle doodle-linkedin">LinkedIn</a>
+
+    <div class="doodle doodle-notes">
+      User Notes:<br>
+      - Product Strategy<br>
+      - User Centric<br>
+      - Data Driven<br>
+      - Outcome Orientated
+    </div>
+
+    <div class="doodle doodle-weekend">
+      Weekend Plan<br>
+      * Parkrun<br>
+      * Take Lokkies to dog park<br>
+      * Sunday morning bike ride
+    </div>
+
+    <div class="doodle doodle-car" aria-hidden="true">
+      <svg viewBox="0 0 627.6115761417566 264.3375062330442" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(256.11 41.13)"><ellipse cx="73.32" cy="75.13" rx="80" ry="82" fill="#f2f4f7"></ellipse></g>
+  <g transform="translate(64 113.56)"><ellipse cx="83.84" cy="24.03" rx="88" ry="30" fill="#f2f4f7"></ellipse></g>
+  <g transform="translate(303.29 111.53)"><ellipse cx="75.88" cy="-4.74" rx="80" ry="10" fill="#f2f4f7"></ellipse></g>
+
+  <g transform="translate(89.57 204.25)"><ellipse cx="45.19" cy="25.04" rx="45" ry="27" fill="#1e1e1e"></ellipse></g>
+  <g transform="translate(447.66 186.65)"><ellipse cx="44.05" cy="28.09" rx="44" ry="30" fill="#1e1e1e"></ellipse></g>
+
+  <g transform="translate(140.16187866342648 79.03716509431115)">
+    <path fill="none" stroke="#2f9e44" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" d="M0 0 C1.04 -0.79, 4.93 -3.5, 6.25 -4.74 C7.58 -5.98, 6.06 -6.09, 7.96 -7.45 C9.85 -8.8, 12.03 -8.35, 17.62 -12.86 C23.21 -17.37, 35.05 -29.56, 41.49 -34.52 C47.93 -39.48, 52.86 -41.17, 56.27 -42.64 C59.68 -44.11, 58.73 -42.3, 61.95 -43.32 C65.18 -44.33, 70.29 -47.04, 75.6 -48.73 C80.9 -50.42, 90.09 -52.23, 93.78 -53.47 C97.48 -54.71, 93.31 -54.26, 97.76 -56.18 C102.22 -58.1, 109.7 -62.83, 120.5 -64.98 C131.3 -67.12, 151.29 -68.36, 162.56 -69.04 C173.83 -69.71, 180.84 -70.39, 188.14 -69.04 C195.43 -67.68, 201.5 -63.4, 206.33 -60.92 C211.16 -58.43, 212.29 -57.64, 217.13 -54.15 C221.96 -50.65, 229.91 -43.66, 235.31 -39.93 C240.71 -36.21, 240.15 -38.35, 249.52 -31.81 C258.9 -25.27, 280.98 -6.88, 291.59 -0.68 C302.2 5.53, 307.31 4.17, 313.18 5.41 C319.06 6.66, 320.19 5.64, 326.83 6.77 C333.46 7.9, 347.29 11.28, 352.97 12.18 C358.66 13.09, 357.14 11.62, 360.93 12.18 C364.72 12.75, 371.54 15, 375.71 15.57 C379.88 16.13, 381.77 15.23, 385.94 15.57 C390.11 15.91, 394.37 17.26, 400.72 17.6 C407.06 17.94, 417.2 16.81, 424.02 17.6 C430.84 18.39, 437.47 20.87, 441.64 22.34 C445.81 23.8, 445.15 23.35, 449.03 26.4 C452.91 29.44, 461.53 37.34, 464.94 40.61 C468.36 43.88, 468.26 43.99, 469.49 46.02 C470.72 48.06, 471.1 50.99, 472.33 52.79 C473.57 54.6, 476.03 54.94, 476.88 56.85 C477.73 58.77, 478.68 60.24, 477.45 64.3 C476.22 68.36, 474.51 73.1, 469.49 81.22 C464.47 89.34, 453.48 105.14, 447.32 113.03 C441.17 120.93, 436.24 125.55, 432.55 128.6 C428.85 131.64, 428 130.85, 425.16 131.31 C422.32 131.76, 417.67 131.53, 415.49 131.31 C413.32 131.08, 412.94 130.52, 412.08 129.95 C411.23 129.39, 410.76 133.45, 410.38 127.92 C410 122.39, 410.1 102.99, 409.81 96.79 C409.53 90.58, 410.1 93.63, 408.67 90.7 C407.25 87.76, 403.46 82.12, 401.29 79.19 C399.11 76.26, 397.69 74.79, 395.6 73.1 C393.52 71.41, 391.53 70.28, 388.78 69.04 C386.03 67.8, 381.58 66.78, 379.12 65.65 C376.65 64.52, 377.22 63.28, 374 62.27 C370.78 61.25, 365.67 60.01, 359.79 59.56 C353.92 59.11, 344.16 58.55, 338.76 59.56 C333.36 60.58, 329.76 63.96, 327.39 65.65 C325.03 67.35, 325.97 68.25, 324.55 69.71 C323.13 71.18, 322.28 70.5, 318.87 74.45 C315.46 78.4, 307.69 87.99, 304.09 93.4 C300.49 98.82, 298.97 102.2, 297.27 106.94 C295.56 111.68, 295.75 117.32, 293.86 121.83 C291.96 126.34, 293.29 130.52, 285.9 134.01 C278.51 137.51, 257.39 141.35, 249.52 142.81 C241.66 144.28, 244.6 143.83, 238.72 142.81 C232.85 141.8, 220.35 137.85, 214.28 136.72 C208.22 135.59, 206.14 136.72, 202.35 136.04 C198.56 135.37, 196.47 133.22, 191.55 132.66 C186.62 132.1, 179.14 132.1, 172.79 132.66 C166.44 133.22, 161.42 135.48, 153.47 136.04 C145.51 136.61, 133.29 135.82, 125.05 136.04 C116.8 136.27, 111.03 137.17, 104.02 137.4 C97.01 137.62, 89.9 138.07, 82.99 137.4 C76.07 136.72, 68.4 134.13, 62.52 133.34 C56.65 132.55, 51.06 134.69, 47.74 132.66 C44.43 130.63, 43.58 123.75, 42.63 121.15 C41.68 118.56, 43.1 119.46, 42.06 117.09 C41.02 114.72, 38.27 111, 36.38 106.94 C34.48 102.88, 32.78 96.34, 30.69 92.73 C28.61 89.12, 26.62 87.54, 23.87 85.28 C21.13 83.03, 16.77 80.54, 14.21 79.19 C11.65 77.84, 10.61 77.61, 8.53 77.16 C6.44 76.71, 6.25 76.48, 1.71 76.48 C-2.84 76.48, -13.36 76.37, -18.76 77.16 C-24.16 77.95, -27.28 79.75, -30.69 81.22 C-34.1 82.69, -36.47 84.04, -39.22 85.96 C-41.97 87.88, -44.81 90.24, -47.18 92.73 C-49.54 95.21, -51.25 97.24, -53.43 100.85 C-55.61 104.46, -58.26 109.08, -60.25 114.39 C-62.24 119.69, -63.85 128.94, -65.37 132.66 C-66.88 136.38, -68.02 135.71, -69.34 136.72 C-70.67 137.74, -69.91 138.3, -73.32 138.75 C-76.73 139.2, -85.92 139.65, -89.81 139.43 C-93.69 139.2, -93.97 138.64, -96.63 137.4 C-99.28 136.16, -102.22 133.67, -105.72 131.98 C-109.23 130.29, -115 128.6, -117.66 127.25 C-120.31 125.89, -120.22 125.44, -121.64 123.86 C-123.06 122.28, -124.95 120.25, -126.18 117.77 C-127.41 115.29, -128.36 111.79, -129.03 108.97 C-129.69 106.15, -129.97 105.7, -130.16 100.85 C-130.35 96, -130.45 86.75, -130.16 79.87 C-129.88 72.99, -129.03 64.19, -128.46 59.56 C-127.89 54.94, -127.41 54.15, -126.75 52.12 C-126.09 50.09, -125.71 49.07, -124.48 47.38 C-123.25 45.69, -122.11 44.33, -119.36 41.96 C-116.62 39.59, -113.2 36.32, -107.99 33.16 C-102.78 30.01, -92.17 25.38, -88.1 23.01 C-84.03 20.64, -85.64 20.31, -83.55 18.95 C-81.47 17.6, -80.14 16.47, -75.6 14.89 C-71.05 13.31, -61.77 11.28, -56.27 9.48 C-50.78 7.67, -48.6 5.75, -42.63 4.06 C-36.66 2.37, -27.47 0.11, -20.46 -0.68 C-13.45 -1.47, -4.83 -0.9, -0.57 -0.68 C3.69 -0.45, 5.02 0.56, 5.12 0.68 C5.21 0.79, 0.85 0.11, 0 0"></path>
+  </g>
+
+  <g transform="translate(190.1804312022225 87.83604275699145)">
+    <path fill="none" stroke="#2f9e44" stroke-width="2.5" stroke-linecap="round" d="M0 0 C0.76 -0.9, 1.52 -2.71, 4.55 -5.41 C7.58 -8.12, 13.45 -12.75, 18.19 -16.24 C22.93 -19.74, 27.95 -23.35, 32.97 -26.4 C37.99 -29.44, 40.36 -31.59, 48.31 -34.52 C56.27 -37.45, 71.81 -42.19, 80.71 -43.99 C89.62 -45.8, 95.21 -44.45, 101.74 -45.35 C108.28 -46.25, 115.38 -48.62, 119.93 -49.41 C124.48 -50.2, 125.61 -49.97, 129.03 -50.09 C132.44 -50.2, 138.21 -50.31, 140.39 -50.09 C142.57 -49.86, 140.68 -49.18, 142.1 -48.73 C143.52 -48.28, 146.55 -48.28, 148.92 -47.38 C151.29 -46.48, 153.37 -46.14, 156.31 -43.32 C159.24 -40.5, 163.7 -33.39, 166.54 -30.46 C169.38 -27.52, 171.65 -27.41, 173.36 -25.72 C175.06 -24.03, 175.63 -21.55, 176.77 -20.31 C177.91 -19.06, 178.19 -20.31, 180.18 -18.27 C182.17 -16.24, 187.38 -10.04, 188.71 -8.12 C190.03 -6.2, 189.46 -7.45, 188.14 -6.77 C186.81 -6.09, 183.59 -4.74, 180.75 -4.06 C177.91 -3.38, 173.64 -3.27, 171.09 -2.71 C168.53 -2.14, 169.57 -1.02, 165.4 -0.68 C161.23 -0.34, 151 -0.34, 146.08 -0.68 C141.15 -1.02, 148.26 -2.26, 135.85 -2.71 C123.44 -3.16, 85.16 -3.72, 71.62 -3.38 C58.07 -3.05, 63.75 -1.13, 54.57 -0.68 C45.38 -0.23, 24.16 -0.9, 16.48 -0.68 C8.81 -0.45, 11.56 0.45, 8.53 0.68 C5.49 0.9, -0.28 0.79, -1.71 0.68 C-3.13 0.56, -0.28 0.11, 0 0"></path>
+  </g>
+
+  <g transform="translate(137.8883002089542 177.85511312949802)">
+    <path fill="none" stroke="#1e1e1e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" d="M0 0 C-1.8 -0.11, -7.96 -1.92, -10.8 -0.68 C-13.64 0.56, -15.16 3.84, -17.05 7.45 C-18.95 11.05, -21.31 16.58, -22.17 20.98 C-23.02 25.38, -22.55 31.25, -22.17 33.84 C-21.79 36.44, -22.93 35.99, -19.89 36.55 C-16.86 37.11, -9.19 38.13, -3.98 37.23 C1.23 36.32, 8.24 32.83, 11.37 31.13 C14.49 29.44, 14.12 28.77, 14.78 27.07 C15.44 25.38, 16.2 24.37, 15.35 20.98 C14.49 17.6, 10.89 9.59, 9.66 6.77 C8.43 3.95, 8.9 4.51, 7.96 4.06 C7.01 3.61, 5.31 4.74, 3.98 4.06 C2.65 3.38, 0.66 0.68, 0 0"></path>
+  </g>
+
+  <g transform="translate(497.1123083388104 169.73313775117776)">
+    <path fill="none" stroke="#1e1e1e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" d="M0 0 C-1.33 0.34, -5.87 1.13, -7.96 2.03 C-10.04 2.93, -11.18 4.06, -12.5 5.41 C-13.83 6.77, -14.87 8.01, -15.91 10.15 C-16.96 12.3, -18.28 15.68, -18.76 18.27 C-19.23 20.87, -19.23 23.46, -18.76 25.72 C-18.28 27.98, -16.77 30.46, -15.91 31.81 C-15.06 33.16, -15.16 33.05, -13.64 33.84 C-12.13 34.63, -9.57 36.1, -6.82 36.55 C-4.07 37, 0.19 37.11, 2.84 36.55 C5.49 35.99, 7.67 34.29, 9.09 33.16 C10.52 32.04, 10.7 31.59, 11.37 29.78 C12.03 27.98, 12.6 25.83, 13.07 22.34 C13.55 18.84, 14.3 11.39, 14.21 8.8 C14.12 6.2, 14.3 7.56, 12.5 6.77 C10.7 5.98, 5.49 5.19, 3.41 4.06 C1.33 2.93, 0.57 0.68, 0 0"></path>
+  </g>
+</svg>
+    </div>
+
+    <div class="wrap">
+      <p class="hero-eyebrow"><span>Project</span></p>
+      <h1>Herman John Boock</h1>
+
+      <div class="hero-squares" id="hero-squares">
+        <a href="work.html" class="sq sq-1 clickable"><span class="label">My Work</span></a>
+        <a href="experience.html" class="sq sq-2 clickable"><span class="label">Experience</span></a>
+        <a href="projects.html" class="sq sq-3 clickable"><span class="label">Projects</span></a>
+        <a href="cv.html" class="sq sq-4 clickable"><span class="label">CV</span></a>
+        <a href="about.html" class="sq sq-5 clickable"><span class="label">About me</span></a>
+      </div>
+
+      <p class="hero-role">Product Builder</p>
+    </div>
+  </header>
+
+  <script>
+    (function(){
+      var toggle = document.getElementById('modeToggle');
+      var STORAGE_KEY = 'hjb-serious-mode';
+
+      function syncLabel(){
+        var isSerious = document.body.classList.contains('serious');
+        toggle.textContent = isSerious ? 'Whiteboard mode' : 'Serious mode';
+      }
+      syncLabel();
+
+      toggle.addEventListener('click', function(){
+        var isSerious = !document.body.classList.contains('serious');
+        document.body.classList.toggle('serious', isSerious);
+        localStorage.setItem(STORAGE_KEY, isSerious);
+        syncLabel();
+      });
+    })();
+
+    (function(){
+      var squares = document.querySelectorAll('#hero-squares .sq');
+      var textWriteTime = 5300;
+      function playSquares(){
+        squares.forEach(function(sq){ sq.classList.remove('play'); });
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){
+            squares.forEach(function(sq){ sq.classList.add('play'); });
+          });
+        });
+      }
+      window.addEventListener('load', function(){
+        setTimeout(playSquares, textWriteTime);
+      });
+    })();
+
+    (function(){
+      var pen = document.getElementById('pen');
+      var canvas = document.getElementById('drawCanvas');
+      var ctx = canvas.getContext('2d');
+
+      function resizeCanvas(){
+        var ratio = window.devicePixelRatio || 1;
+        canvas.width = window.innerWidth * ratio;
+        canvas.height = window.innerHeight * ratio;
+        canvas.style.width = window.innerWidth + 'px';
+        canvas.style.height = window.innerHeight + 'px';
+        ctx.scale(ratio, ratio);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+        ctx.lineWidth = 4;
+      }
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      var held = false;
+      var lastX = 0, lastY = 0;
+      var penOffsetX = 15;
+      var penOffsetY = 150;
+
+      pen.addEventListener('pointerdown', function(e){
+        held = true;
+        pen.classList.add('held');
+        lastX = e.clientX;
+        lastY = e.clientY;
+        pen.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      });
+
+      window.addEventListener('pointermove', function(e){
+        if (!held) return;
+        var x = e.clientX;
+        var y = e.clientY;
+
+        pen.style.left = (x - penOffsetX) + 'px';
+        pen.style.top = (y - penOffsetY) + 'px';
+
+        var dx = x - lastX;
+        var tilt = Math.max(-18, Math.min(18, dx * 1.5));
+        pen.style.transform = 'rotate(' + (4 + tilt) + 'deg)';
+
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+
+        lastX = x;
+        lastY = y;
+      });
+
+      window.addEventListener('pointerup', function(e){
+        if (!held) return;
+        held = false;
+        pen.classList.remove('held');
+      });
+    })();
+  </script>
+
+</body>
+</html>
