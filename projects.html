@@ -220,32 +220,24 @@
   }
 
   .github-card{
-    display: block;
+    display: inline-block;
+    max-width: 100%;
     background: var(--paper-raised);
     border: 1px solid var(--rule);
     border-radius: 8px;
-    padding: 24px;
+    padding: 16px 20px;
   }
   .github-card-head{
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
   }
   .github-card-head .label{
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--ink-faint);
   }
-  .github-card-head a{
-    font-size: 13px;
-    color: var(--accent);
-    border-bottom: 1px solid var(--accent);
-  }
-  .github-card-head a:hover{ opacity: 0.75; }
 
   #github-heatmap{
     overflow-x: auto;
-    padding-bottom: 4px;
+    padding-bottom: 2px;
   }
   #github-heatmap svg{ display: block; }
   #github-heatmap .gh-status{
@@ -583,7 +575,6 @@
     border-color: var(--serious-border);
   }
   body.serious .github-card-head .label{ color: var(--serious-text-soft); }
-  body.serious .github-card-head a{ color: var(--serious-accent); border-bottom-color: var(--serious-accent); }
   body.serious #github-heatmap .gh-status{ color: var(--serious-text-soft); }
   body.serious #github-heatmap .gh-status a{ color: var(--serious-accent); border-bottom-color: var(--serious-accent); }
 
@@ -699,8 +690,7 @@
         </div>
         <div class="github-card">
           <div class="github-card-head">
-            <span class="label">Last ~90 days of public activity, pulled live from GitHub</span>
-            <a href="https://github.com/hermanboock" target="_blank" rel="noopener">View profile &rarr;</a>
+            <span class="label">Last 6 weeks of public activity, pulled live from GitHub</span>
           </div>
           <div id="github-heatmap"><div class="gh-status">Loading activity&hellip;</div></div>
         </div>
@@ -1053,7 +1043,7 @@
     (function(){
       var container = document.getElementById('github-heatmap');
       var USERNAME = 'hermanboock';
-      var DAYS = 90;
+      var DAYS = 42;
 
       function showStatus(msg){
         container.innerHTML = '<div class="gh-status">' + msg + '</div>';
@@ -1091,30 +1081,54 @@
         }
 
         var weeks = Math.ceil(days.length / 7);
-        var cell = 11, gap = 3;
-        var w = weeks * (cell + gap);
-        var h = 7 * (cell + gap);
+        var cell = 13, gap = 3;
+        var labelW = 28;
+        var gridW = weeks * (cell + gap);
+        var w = labelW + gridW;
+        var h = 7 * (cell + gap) + 16; // extra row for month labels
 
         var serious = isSeriousMode();
         var rgb = serious ? '127,191,158' : '47,74,60';
-        var emptyColor = serious ? 'rgba(255,255,255,0.06)' : 'rgba(32,29,24,0.06)';
+        var textColor = serious ? '#A6A9B0' : '#8B8474';
+        var emptyColor = serious ? 'rgba(255,255,255,0.045)' : 'rgba(32,29,24,0.045)';
 
         var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + w + '" height="' + h + '" xmlns="http://www.w3.org/2000/svg">';
+
+        // day-of-week labels (Mon, Wed, Fri)
+        var dayLabels = { 1: 'Mon', 3: 'Wed', 5: 'Fri' };
+        Object.keys(dayLabels).forEach(function(row){
+          var y = 16 + (row * (cell + gap)) + cell - 3;
+          svg += '<text x="0" y="' + y + '" font-size="9" fill="' + textColor + '">' + dayLabels[row] + '</text>';
+        });
+
+        // month labels above columns where the month changes
+        var lastMonth = null;
+        for (var col = 0; col < weeks; col++){
+          var dayIndex = col * 7;
+          if (!days[dayIndex]) continue;
+          var m = days[dayIndex].date.getMonth();
+          if (m !== lastMonth){
+            var x = labelW + col * (cell + gap);
+            svg += '<text x="' + x + '" y="10" font-size="9" fill="' + textColor + '">' + days[dayIndex].date.toLocaleString('en-US', { month: 'short' }) + '</text>';
+            lastMonth = m;
+          }
+        }
+
         days.forEach(function(d, i){
           var col = Math.floor(i / 7);
           var row = i % 7;
-          var x = col * (cell + gap);
-          var y = row * (cell + gap);
+          var x = labelW + col * (cell + gap);
+          var y = 16 + row * (cell + gap);
           var fill;
           if (d.future){
             fill = 'transparent';
           } else if (d.count === 0){
             fill = emptyColor;
           } else {
-            var alpha = Math.min(1, 0.28 + d.count * 0.16);
+            var alpha = Math.min(1, 0.32 + d.count * 0.16);
             fill = 'rgba(' + rgb + ',' + alpha.toFixed(2) + ')';
           }
-          svg += '<rect x="' + x + '" y="' + y + '" width="' + cell + '" height="' + cell + '" rx="2" fill="' + fill + '"><title>' + d.date.toISOString().slice(0,10) + ': ' + d.count + ' event(s)</title></rect>';
+          svg += '<rect x="' + x + '" y="' + y + '" width="' + cell + '" height="' + cell + '" rx="2.5" fill="' + fill + '"><title>' + d.date.toISOString().slice(0,10) + ': ' + d.count + ' event(s)</title></rect>';
         });
         svg += '</svg>';
 
