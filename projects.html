@@ -181,6 +181,30 @@
   .featured-features li{ margin-bottom: 8px; }
   .featured-features li strong{ color: var(--ink); }
 
+  .featured-stats{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .featured-stats .stat{
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .featured-stats .num{
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 3px;
+  }
+  .featured-stats .label{
+    font-size: 11.5px;
+    color: var(--ink-faint);
+  }
+
   .featured-note{
     font-style: italic;
     font-size: 14px;
@@ -204,6 +228,7 @@
 
   @media (max-width: 640px){
     .featured-split{ grid-template-columns: 1fr; }
+    .featured-stats{ grid-template-columns: 1fr 1fr; }
   }
 
   /* ============ GITHUB GRAPH ============ */
@@ -562,6 +587,12 @@
   body.serious .featured-features h4{ color: var(--serious-text-soft); }
   body.serious .featured-features ul{ color: var(--serious-text-soft); }
   body.serious .featured-features li strong{ color: var(--serious-text); }
+  body.serious .featured-stats .stat{
+    background: var(--serious-bg-raised);
+    border-color: var(--serious-border);
+  }
+  body.serious .featured-stats .num{ color: var(--serious-accent); }
+  body.serious .featured-stats .label{ color: var(--serious-text-soft); }
   body.serious .featured-note{ color: var(--serious-text-soft); border-top-color: var(--serious-border); }
 
   body.serious .placeholder-block{
@@ -677,6 +708,16 @@
             </ul>
           </div>
 
+          <div class="featured-features">
+            <h4>Why People Trust It</h4>
+            <div class="featured-stats">
+              <div class="stat"><span class="num">9</span><span class="label">provinces reached</span></div>
+              <div class="stat"><span class="num">200+</span><span class="label">schools using the platform</span></div>
+              <div class="stat"><span class="num">21%</span><span class="label">improvement in final marks</span></div>
+              <div class="stat"><span class="num">30k+</span><span class="label">resources used since 2025</span></div>
+            </div>
+          </div>
+
           <p class="featured-note">A personal passion product my wife and I built, combining her love for mathematics and teaching with my interest in creating digital products. It's been a meaningful way for us to work together and create something that makes a real impact in our communities.</p>
 
           <a href="https://www.themathsquare.co.za/" target="_blank" rel="noopener" class="link">themathsquare.co.za &rarr;</a>
@@ -787,7 +828,7 @@
           </ul>
           <p>As a Head of Product, I constantly made decisions. What do we build next? Who are we really building for? Which problems deserve attention now, and which fires can burn? Before Playing to Win, I often evaluated decisions in isolation, feature by feature, initiative by initiative, customer by customer, or even keeping a few doors open for "just in case".</p>
           <p>This new way of thinking pushed me to zoom out and ask: Does this choice reinforce how we've decided to win, or does it dilute it?</p>
-          <p>And that is the question I lead with. As a Head of Product, decision-making is constant. What do we build next? Who are we really building for? Which problems deserve attention now, and which don't? Before Playing to Win, I often evaluated decisions in isolation, feature by feature, initiative by initiative. The framework pushed me to zoom out and ask: Does this choice reinforce how we've decided to win, or does it dilute it?</p>
+          <p>And that is the question I lead with. Will this help us win.</p>
 
           <h4>The impact</h4>
           <p>I became far more comfortable saying no. I always enjoyed to push back and get to the real "why", now I had an additional tool to evaluate if the fit in. I stopped trying to optimise for every user, every segment, and every possible outcome. Instead, decisions became easier because they were anchored to a few explicit strategic bets.</p>
@@ -887,7 +928,7 @@
 
           <div class="tldr-box">
             <span class="tldr-label">TL;DR</span>
-            <p>This Product Strategy framework, big brained by Gibson Biddle 🧠, has become one of my go-to tools for developing product strategies that align with business goals and delivering real value.</p>
+            <p>This Product Strategy framework, big brained by Gibson Biddle, has become one of my go-to tools for developing product strategies that align with business goals and delivering real value.</p>
             <p>While every business is different, this framework provides a solid foundation for shaping high-level hypotheses, prioritizing work, and connecting product thinking to measurable outcomes.</p>
             <p>It looks at a lot of acronyms so LFG:</p>
             <ul>
