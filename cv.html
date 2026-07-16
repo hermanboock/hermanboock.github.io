@@ -20,6 +20,13 @@
     --font-display: 'Roboto', sans-serif;
     --font-body: 'Roboto', sans-serif;
     --gutter: clamp(24px, 6vw, 64px);
+
+    --serious-bg: #14161A;
+    --serious-bg-raised: #1D2026;
+    --serious-text: #F2F1ED;
+    --serious-text-soft: #A6A9B0;
+    --serious-accent: #7FBF9E;
+    --serious-border: rgba(255,255,255,0.08);
   }
 
   *{ box-sizing: border-box; }
@@ -35,6 +42,7 @@
     background-image:
       radial-gradient(circle at 20% 10%, rgba(47,74,60,0.03), transparent 40%),
       radial-gradient(circle at 80% 60%, rgba(139,94,60,0.03), transparent 45%);
+    transition: background-color 0.4s ease, color 0.4s ease;
   }
 
   a{ color: inherit; text-decoration: none; }
@@ -68,16 +76,11 @@
     gap: 6px;
   }
   .back-link:hover{ color: var(--accent); }
-  .nav-links{
-    display:flex;
-    align-items: center;
-    gap: 28px;
+  .nav-email{
     font-size: 14px;
     color: var(--ink-soft);
   }
-  .nav-links a{ display:flex; align-items:center; gap:6px; }
-  .nav-links a:hover{ color: var(--accent); }
-  .nav-links svg{ width:17px; height:17px; }
+  .nav-email:hover{ color: var(--accent); }
 
   main{ padding: 64px 0 100px; }
   .page-title{
@@ -88,12 +91,13 @@
   }
   .page-sub{
     color: var(--ink-soft);
+    font-style: italic;
     max-width: 560px;
     margin: 0 0 48px;
   }
 
   .download-row{
-    margin-bottom: 48px;
+    margin-bottom: 32px;
   }
   .download-btn{
     display: inline-flex;
@@ -108,107 +112,56 @@
   }
   .download-btn:hover{ opacity: 0.9; }
 
-  .cv-section{
-    padding: 28px 0;
-    border-top: 1px solid var(--rule);
-  }
-  .cv-section:first-of-type{ border-top: none; }
-  .cv-section h2{
-    font-size: 18px;
-    font-weight: 700;
-    margin: 0 0 16px;
-  }
-  .cv-entry{
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 24px;
-    margin-bottom: 20px;
-  }
-  .cv-entry .meta{
-    font-size: 13px;
-    color: var(--ink-faint);
-  }
-  .cv-entry .detail-title{
-    font-weight: 500;
-    margin: 0 0 4px;
-  }
-  .cv-entry .detail-desc{
-    color: var(--ink-soft);
-    font-size: 14px;
-  }
-
-  @media (max-width: 780px){
-    .cv-entry{ grid-template-columns: 1fr; gap: 6px; }
-  }
-
   a:focus-visible{
     outline: 2px solid var(--accent);
     outline-offset: 3px;
   }
 
+  /* ============ SERIOUS MODE ============ */
+  body.serious{
+    background: var(--serious-bg);
+    background-image: none;
+    color: var(--serious-text);
+  }
+  body.serious .nav{
+    background: rgba(20,22,26,0.9);
+    border-bottom: 1px solid var(--serious-border);
+  }
+  body.serious .back-link{ color: var(--serious-text-soft); }
+  body.serious .back-link:hover{ color: var(--serious-accent); }
+  body.serious .nav-email{ color: var(--serious-text-soft); }
+  body.serious .nav-email:hover{ color: var(--serious-accent); }
+  body.serious .page-sub{ color: var(--serious-text-soft); }
+  body.serious .download-btn{ background: var(--serious-accent); color: var(--serious-bg); }
+
 </style>
 </head>
 <body>
 
+  <script>
+    (function(){
+      var stored = localStorage.getItem('hjb-serious-mode');
+      var isSerious = stored === null ? true : stored === 'true';
+      if (isSerious) document.body.classList.add('serious');
+    })();
+  </script>
+
   <nav class="nav">
     <div class="wrap">
       <a href="index.html" class="back-link">&larr; Back</a>
-      <div class="nav-links">
-        <a href="mailto:hermanboock@gmail.com">hermanboock@gmail.com</a>
-        <a href="https://www.linkedin.com/in/hermanboock/" target="_blank" rel="noopener" aria-label="LinkedIn">
-          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/>
-          </svg>
-        </a>
-      </div>
+      <a href="mailto:hermanboock@gmail.com" class="nav-email">hermanboock@gmail.com</a>
     </div>
   </nav>
 
   <main>
     <div class="wrap">
       <h1 class="page-title">CV</h1>
-      <p class="page-sub">[Placeholder intro line — one or two sentences summarizing your professional background.]</p>
 
       <div class="download-row">
         <a href="Herman-Boock-CV.pdf" download="Herman Boock - CV.pdf" class="download-btn">Download PDF</a>
       </div>
 
-      <div class="cv-section">
-        <h2>Experience</h2>
-        <div class="cv-entry">
-          <div class="meta">Sept 2022 – Present</div>
-          <div>
-            <div class="detail-title">Head of Product — JOBJACK</div>
-            <div class="detail-desc">[Placeholder description of scope and impact.]</div>
-          </div>
-        </div>
-        <div class="cv-entry">
-          <div class="meta">[dates]</div>
-          <div>
-            <div class="detail-title">[Role title] — [Company]</div>
-            <div class="detail-desc">[Placeholder description of scope and impact.]</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="cv-section">
-        <h2>Education</h2>
-        <div class="cv-entry">
-          <div class="meta">[dates]</div>
-          <div>
-            <div class="detail-title">[Degree / Institution]</div>
-            <div class="detail-desc">[Placeholder detail.]</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="cv-section">
-        <h2>Skills</h2>
-        <div class="cv-entry">
-          <div class="meta">Tools</div>
-          <div class="detail-desc">[Claude Code, SQL, JIRA, Lovable, Figma, more]</div>
-        </div>
-      </div>
+      <p class="page-sub">If you find a typo, let's call it an attention-to-detail test&hellip;</p>
     </div>
   </main>
 
