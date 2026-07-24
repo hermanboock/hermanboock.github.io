@@ -14,7 +14,7 @@ Senior Product Manager & Head of Product at [JOBJACK](https://www.jobjack.co.za)
 
 ## Outside the screen
 
-Running and parkrun 🏃 · cycling 🚴 · wrenching on a 1966 Karmann Ghia and a 1982 Suzuki in the garage 🔧 · painting Warhammer models 🎨 · building [The Math Square](https://hermanboock.github.io). Golden retriever named Lokkies keeps me company through all of it.
+Running 🏃 · cycling 🚴 · wrenching on a 1966 VW and a 1982 Suzuki 🔧 · painting Warhammer models 🎨 · building [The Math Square](https://hermanboock.github.io) while our golden retriever keeps me on my toes.
 
 ---
 
